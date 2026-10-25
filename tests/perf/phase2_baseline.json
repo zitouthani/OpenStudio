@@ -1,0 +1,16 @@
+{
+  "rows": 500000,
+  "input_mb": 29.8,
+  "phase2": {
+    "records": 500000,
+    "seconds": 1.786563430000001,
+    "records_per_second": 279866.917459516,
+    "peak_rss_mb": 229.28515625
+  },
+  "phase3": {
+    "records": 500000,
+    "seconds": 3.114236756999958,
+    "records_per_second": 160552.98264530976,
+    "peak_rss_mb": 18.1875
+  }
+}
