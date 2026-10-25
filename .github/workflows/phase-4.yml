@@ -17,7 +17,7 @@ jobs:
           import pathlib
           expected = [
               'src/components',
-              'docs/talend-importer.md',
+              'docs/ETL-importer.md',
           ]
           for path in expected:
               assert pathlib.Path(path).exists(), f'Missing: {path}'
