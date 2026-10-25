@@ -12,6 +12,8 @@ Establish the project boundaries, technical constraints, licensing review, Talen
 - MVP feature list and backlog
 - Test plan and security considerations
 
+The initial scope and audit boundaries are recorded in `docs/phase-0-audit.md`.
+
 ## Acceptance criteria
 
 - The project direction is documented.

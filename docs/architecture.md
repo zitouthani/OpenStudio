@@ -9,9 +9,9 @@ This project follows a layered architecture to keep the execution engine separat
 - `data_runtime` handles schema and batch semantics.
 - `component_sdk` defines component contracts and registry.
 - `components` holds native components and connectors.
-- `desktop` manages the PySide6 interface.
-- `cli` provides a headless execution path.
-- `talend_importer` reads Talend job metadata and emits migration reports.
+- `desktop` provides an optional PySide6 editor and compiles supported visual
+  jobs to the engine's execution graph.
+- `cli` provides the command-line entry point for headless workflows.
 
 ## Design principles
 
@@ -20,3 +20,6 @@ This project follows a layered architecture to keep the execution engine separat
 - Use versioned jobs and safe validation.
 - Add heavy dependencies only when needed and covered by tests.
 - Ensure credentials and secrets are never embedded in job definitions.
+
+The first desktop editor supports linear CSV pipelines. UI modules depend on
+the job model and engine, while the engine itself has no GUI dependency.

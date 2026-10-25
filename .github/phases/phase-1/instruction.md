@@ -18,3 +18,6 @@ Create the initial Python foundation for job modeling, execution graph handling,
 - The engine can execute a simple graph without the UI.
 - A CSV pipeline can run end-to-end.
 - The project keeps a clear separation between engine and UI.
+
+The CSV acceptance check is exercised end-to-end by
+`tests/test_core_pipeline.py`.

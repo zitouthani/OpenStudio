@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7fb">
+    <meta name="description" content="Tableau de bord de suivi des phases et tâches de développement OpenStudio ETL.">
+    <title>Suivi du projet · OpenStudio ETL</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar" aria-label="Navigation principale">
+        <a class="brand" href="#" aria-label="OpenStudio ETL, accueil">
+          <span class="brand-mark" aria-hidden="true">O</span>
+          <span class="brand-name">openstudio<span>etl</span></span>
+        </a>
+
+        <div class="sidebar-label">ESPACE PROJET</div>
+        <a class="nav-link active" href="#overview" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">▦</span>
+          Vue d’ensemble
+        </a>
+        <a class="nav-link" href="#roadmap">
+          <span class="nav-icon" aria-hidden="true">☷</span>
+          Phases de développement
+        </a>
+
+        <div class="sidebar-bottom">
+          <span class="status-indicator" aria-hidden="true"></span>
+          <span>Suivi local activé</span>
+        </div>
+      </aside>
+
+      <main class="main-content" id="overview">
+        <header class="topbar">
+          <span>Projet <span class="breadcrumb-divider">/</span> <strong>Suivi du développement</strong></span>
+          <span class="local-badge" id="storage-status" aria-live="polite">
+            <span aria-hidden="true">●</span>
+            <span id="storage-label">Données enregistrées localement</span>
+          </span>
+        </header>
+
+        <section class="page-heading" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">ESPACE PROJET <span>/</span> OPENSTUDIO ETL</p>
+            <h1 id="page-title">Suivi du développement</h1>
+            <p class="page-description">Les étapes du projet, à portée de vue. Mettez à jour chaque tâche au fil du travail.</p>
+          </div>
+          <a class="text-link" href="https://github.com/zitouthani/OpenStudio" target="_blank" rel="noreferrer">
+            Voir le dépôt <span aria-hidden="true">↗</span>
+          </a>
+        </section>
+
+        <section class="summary-grid" aria-label="Résumé de l’avancement">
+          <article class="summary-card progress-card">
+            <div class="summary-topline">
+              <span class="summary-label">AVANCEMENT GLOBAL</span>
+              <span class="summary-icon purple" aria-hidden="true">↗</span>
+            </div>
+            <div class="summary-value"><span id="progress-value">0</span><span class="value-suffix">%</span></div>
+            <div class="progress-track" role="progressbar" aria-label="Avancement global" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <span></span>
+            </div>
+            <p class="summary-footnote" id="progress-caption">sur l’ensemble des tâches du projet</p>
+          </article>
+
+          <article class="summary-card">
+            <div class="summary-topline">
+              <span class="summary-label">PHASES</span>
+              <span class="summary-icon blue" aria-hidden="true">▦</span>
+            </div>
+            <div class="summary-value"><span id="phase-count">6</span></div>
+            <p class="summary-footnote">étapes pour construire le projet</p>
+          </article>
+
+          <article class="summary-card">
+            <div class="summary-topline">
+              <span class="summary-label">TÂCHES TERMINÉES</span>
+              <span class="summary-icon green" aria-hidden="true">✓</span>
+            </div>
+            <div class="summary-value"><span id="completed-count">0</span><span class="value-muted"> / <span id="task-count">0</span></span></div>
+            <p class="summary-footnote">tâches marquées comme terminées</p>
+          </article>
+
+          <article class="summary-card">
+            <div class="summary-topline">
+              <span class="summary-label">EN COURS</span>
+              <span class="summary-icon orange" aria-hidden="true">◷</span>
+            </div>
+            <div class="summary-value"><span id="active-count">0</span></div>
+            <p class="summary-footnote">tâches actuellement en cours</p>
+          </article>
+        </section>
+
+        <section class="roadmap-section" id="roadmap" aria-labelledby="roadmap-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="roadmap-title">Phases de développement</h2>
+              <p>Suivez chaque étape et mettez à jour le statut de ses tâches.</p>
+            </div>
+            <button class="reset-button" id="reset-progress" type="button">Réinitialiser le suivi</button>
+          </div>
+          <div class="phase-list" id="phase-list"></div>
+        </section>
+
+        <footer class="page-footer">
+          <span>OpenStudio ETL <span aria-hidden="true">·</span> Tableau de bord du projet</span>
+          <span>Vos changements restent dans ce navigateur.</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
