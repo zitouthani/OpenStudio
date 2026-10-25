@@ -17,6 +17,8 @@ jobs:
           import pathlib
           files = [
               pathlib.Path('.github/phases/phase-0/instruction.md'),
+              pathlib.Path('docs/phase-0-audit.md'),
+              pathlib.Path('docs/security.md'),
               pathlib.Path('README.md'),
               pathlib.Path('docs/architecture.md'),
           ]

@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Qt system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libegl1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -23,3 +27,12 @@ jobs:
               assert pathlib.Path(path).exists(), f'Missing: {path}'
           print('Phase 2 structure present.')
           PY
+      - name: Install project and GUI test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements/dev.txt
+          python -m pip install -e ".[gui]"
+      - name: Run desktop smoke test
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: pytest -q tests/test_desktop_window.py

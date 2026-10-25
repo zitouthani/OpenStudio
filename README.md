@@ -179,6 +179,7 @@ audits, vulnerability analysis, or source review.
 - `README.md` is the entry point for installation and usage.
 - `docs/architecture.md` describes module boundaries.
 - `docs/developer-guide.md` explains tooling and local workflow.
+- `docs/phase-0-audit.md` records the initial MVP scope and validation plan.
 - `docs/desktop-editor.md` explains the phase-2 editor and supported pipeline.
 - `docs/ETL-importer.md` describes migration safety and reporting.
 - `docs/release.md` covers packaging and release validation.

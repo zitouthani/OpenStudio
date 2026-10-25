@@ -27,3 +27,9 @@ jobs:
               assert pathlib.Path(path).exists(), f'Missing: {path}'
           print('Phase 1 structure present.')
           PY
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements/dev.txt
+      - name: Run end-to-end CSV pipeline test
+        run: pytest -q tests/test_core_pipeline.py
