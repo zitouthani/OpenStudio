@@ -1,10 +1,10 @@
 # OpenStudio ETL
 
-OpenStudio ETL is a Python-first, Talend-inspired data integration platform designed for visual job authoring, secure local credential handling, and extensible data processing.
+OpenStudio ETL is a Python-first, inspired data integration platform designed for visual job authoring, secure local credential handling, and extensible data processing.
 
 ## Vision
 
-This repository is structured as a maintainable ETL foundation for a future desktop application inspired by Talend Big Data Open Studio. The goal is to keep the execution engine independent from the interface, respect security/privacy constraints for sensitive data, and use a phased, testable process for feature delivery.
+This repository is structured as a maintainable ETL foundation for a future desktop application inspired by Big Data Open Studio. The goal is to keep the execution engine independent from the interface, respect security/privacy constraints for sensitive data, and use a phased, testable process for feature delivery.
 
 ## Product goals
 
@@ -39,7 +39,7 @@ This repository is structured as a maintainable ETL foundation for a future desk
 │   ├── architecture.md
 │   ├── developer-guide.md
 │   ├── security.md
-│   ├── talend-importer.md
+│   ├── ETL-importer.md
 │   └── release.md
 ├── requirements/
 │   ├── base.txt
@@ -53,7 +53,7 @@ This repository is structured as a maintainable ETL foundation for a future desk
 │   ├── components/
 │   ├── desktop/
 │   ├── cli/
-│   ├── talend_importer/
+│   ├── ETL_importer/
 │   └── common/
 ├── tests/
 ├── SECURITY.md
@@ -103,7 +103,7 @@ The project is organized in six phases:
 3. Phase 2 — Desktop editor
 4. Phase 3 — Robust execution
 5. Phase 4 — Connectors
-6. Phase 5 — Talend migration and release
+6. Phase 5 — ETL migration and release
 
 Each phase contains an `instruction.md` file and matching GitHub workflow automation.
 
@@ -143,7 +143,7 @@ audits, vulnerability analysis, or source review.
 - `README.md` is the entry point for installation and usage.
 - `docs/architecture.md` describes module boundaries.
 - `docs/developer-guide.md` explains tooling and local workflow.
-- `docs/talend-importer.md` describes migration safety and reporting.
+- `docs/ETL-importer.md` describes migration safety and reporting.
 - `docs/release.md` covers packaging and release validation.
 
 ## Contributing
