@@ -17,3 +17,4 @@ dist/
 htmlcov/
 *.whl
 *.tar.gz
+.hypothesis/
