@@ -27,12 +27,14 @@ rolled back by the engine.
 
 ### Checkpoints and commit boundary
 
-A checkpoint contains a format version and the ID of the last fully committed
-batch. It is written via a temporary file and atomic replacement. The engine
-commits only after every component in the batch has completed successfully,
-including downstream writes. If the process stops before that point, resume
-replays that batch; deterministic IDs and idempotent batch writes prevent
-duplicates. An absent checkpoint starts at the first batch.
+A checkpoint contains a format version, the configured batch size, and the ID
+of the last fully committed batch. It is written via a temporary file and
+atomic replacement. Resume rejects a different batch size because it would
+change batch boundaries. The engine commits only after every component in the
+batch has completed successfully, including downstream writes. If the process
+stops before that point, resume replays that batch; deterministic IDs and
+idempotent batch writes prevent duplicates. An absent checkpoint starts at
+the first batch.
 
 ### Bounded flow and backpressure
 
@@ -61,11 +63,27 @@ an in-flight component, because that could leave an untracked partial write.
   exhausted retry / unrecoverable stage failure; stop execution without
   committing the failed batch.
 
+## Validation figures
+
+The Phase 2 baseline above used a generated input with `id` and `value` keys
+and one pass-through component. The Phase 3 CI regression test requires at least
+50% of its measured throughput (267,549 records/second) and the large-stream
+test requires less than 5,000,000 bytes of traced Python allocation.
+
+For the large-input check, one million rows of the same shape were streamed in
+256-record batches in Docker with `--memory=64m --memory-swap=64m`. This
+materialized input would be approximately 268.8 MiB by linear extrapolation
+from the Phase 2 allocation profile, or more than four times the container
+limit. The run completed at about 642,184 records/second; peak traced Python
+allocation was 145,307 bytes, process peak RSS was 20,852 KiB, and cgroup peak
+memory was 17,039,360 bytes. The test asserts that the container run completes
+and remains below the 64 MiB hard limit. These measurements are environment-
+specific and are references, not universal guarantees.
+
 ## Consequences
 
 The engine can resume safely when source ordering is stable and sinks obey the
 batch-aware idempotence contract. Generic legacy components continue to work
 through their existing `process(rows)` interface, but side-effecting legacy
 components cannot provide crash-safe exactly-once effects without opting into
-the batch-aware contract. The baseline figures are environment-specific and
-must not be treated as a performance threshold.
+the batch-aware contract.

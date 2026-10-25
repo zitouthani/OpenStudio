@@ -1,5 +1,6 @@
 -r base.txt
 pytest>=8.0.0
+hypothesis>=6.100.1
 ruff>=0.5.0
 mypy>=1.10.0
 build>=1.2.0

@@ -15,6 +15,35 @@ python -m pip install -r requirements/dev.txt
 pytest
 ```
 
+## Streaming execution
+
+`execute_graph` remains available for the original whole-input API. For large
+jobs, pass a streaming source to `execute_graph_stream` and make a batch-aware
+writer the final graph component:
+
+```python
+from src.components.csv_reader import CSVReader
+from src.components.csv_writer import CSVWriter
+from src.engine import ExecutionGraph, execute_graph_stream
+
+graph = ExecutionGraph()
+graph.add_component("writer", CSVWriter("output.csv"))
+metrics = execute_graph_stream(
+    graph,
+    CSVReader("input.csv").iter_rows(),
+    batch_size=512,
+    checkpoint_path="output.checkpoint.json",
+    resume=True,
+)
+metrics.write_prometheus("output.metrics")
+```
+
+`CancellationToken.cancel()` requests a clean stop after the in-flight batch;
+resume the same stable, ordered source with the same batch size and checkpoint
+path. Legacy components continue to work with `process(rows)`. Components that
+perform external side effects should implement idempotent
+`process_batch(rows, batch_id)` writes to support crash-safe replay.
+
 ## Linting
 
 ```bash
