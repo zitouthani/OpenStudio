@@ -1,0 +1,44 @@
+{
+  "rows": 500000,
+  "input_mb": 29.8,
+  "phase2": {
+    "records": 500000,
+    "runs": 7,
+    "records_per_second_runs": [
+      272490.2,
+      271825.2,
+      272711.5,
+      271570.1,
+      272112.2,
+      270199.9,
+      272589.5
+    ],
+    "records_per_second": 272112.2230601649,
+    "records_per_second_min": 270199.9015986881,
+    "records_per_second_max": 272711.4866493332,
+    "spread_pct": 0.9,
+    "seconds": 1.8374771789999613,
+    "peak_rss_mb": 229.3515625
+  },
+  "phase3": {
+    "records": 500000,
+    "runs": 7,
+    "records_per_second_runs": [
+      154279.0,
+      159462.3,
+      159123.5,
+      161530.0,
+      161689.1,
+      163160.5,
+      160878.6
+    ],
+    "records_per_second": 160878.61153502844,
+    "records_per_second_min": 154278.95925642186,
+    "records_per_second_max": 163160.46679843444,
+    "spread_pct": 5.5,
+    "seconds": 3.107933337000077,
+    "peak_rss_mb": 18.640625
+  },
+  "phase3_vs_phase2_throughput_ratio": 0.5912,
+  "regression_threshold_pct": 20
+}
