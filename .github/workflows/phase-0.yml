@@ -1,0 +1,26 @@
+name: Phase 0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate phase 0 artifacts
+        run: |
+          python - <<'PY'
+          import pathlib
+          files = [
+              pathlib.Path('.github/phases/phase-0/instruction.md'),
+              pathlib.Path('README.md'),
+              pathlib.Path('docs/architecture.md'),
+          ]
+          for item in files:
+              assert item.exists(), f'Missing: {item}'
+          print('Phase 0 artifacts present.')
+          PY
