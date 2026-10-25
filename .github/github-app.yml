@@ -1,0 +1,23 @@
+instructions: |
+  OpenStudio ETL is an open-source, Python-first ETL project intended to make
+  data integration accessible, transparent, and extensible without vendor
+  lock-in.
+
+  Keep the execution engine independent from the desktop interface. Prefer
+  clear, business-friendly component names and small, testable changes. Add or
+  update tests for behavior changes, and update documentation when user-facing
+  behavior or contributor workflows change.
+
+  Treat input files, file paths, job definitions, credentials, and external
+  data as untrusted or sensitive. Never add real secrets to code, tests,
+  examples, logs, or generated artifacts. Preserve local privacy and redact
+  sensitive values.
+
+  Before proposing a dependency, consider its maintenance status, license,
+  security implications, and whether the project can meet the need without it.
+  Provenance attestations complement tests and dependency analysis; they do not
+  replace them.
+
+  Follow the repository's existing conventions and phase guidance. Do not
+  claim a security audit, release, or validation was completed unless it was
+  actually performed and its results are available.

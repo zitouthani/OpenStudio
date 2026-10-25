@@ -15,4 +15,8 @@ pythonpath = ["src"]
 testpaths = ["tests"]
 
 [tool.setuptools]
-packages = ["src"]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
