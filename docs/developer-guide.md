@@ -83,6 +83,10 @@ execution engine remains independent of PySide6. See
 
 - Phase instructions live under `.github/phases/`.
 - GitHub Actions workflows are under `.github/workflows/`.
+- Run `Sequential phase validation` from the Actions tab to validate phases 0
+  through 5 in order. Each phase starts only after the previous reusable
+  workflow succeeds; a failure prevents later phases from running. Individual
+  phase workflows remain available for manual runs.
 - Keep branch scope narrow and feature-driven.
 - Update README and relevant docs whenever the user-facing workflow changes.
 

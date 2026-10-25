@@ -2,7 +2,7 @@ name: Phase 2
 
 on:
   workflow_dispatch:
-
+  workflow_call:
 jobs:
   validation:
     runs-on: ubuntu-latest

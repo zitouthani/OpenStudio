@@ -34,7 +34,8 @@ This repository provides a maintainable foundation for visual pipeline authoring
 │       ├── phase-2.yml
 │       ├── phase-3.yml
 │       ├── phase-4.yml
-│       └── phase-5.yml
+│       ├── phase-5.yml
+│       └── phase-sequence.yml
 ├── docs/
 │   ├── architecture.md
 │   ├── developer-guide.md

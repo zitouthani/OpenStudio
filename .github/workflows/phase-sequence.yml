@@ -1,0 +1,23 @@
+name: Sequential phase validation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  phase_0:
+    uses: ./.github/workflows/phase-0.yml
+  phase_1:
+    needs: phase_0
+    uses: ./.github/workflows/phase-1.yml
+  phase_2:
+    needs: phase_1
+    uses: ./.github/workflows/phase-2.yml
+  phase_3:
+    needs: phase_2
+    uses: ./.github/workflows/phase-3.yml
+  phase_4:
+    needs: phase_3
+    uses: ./.github/workflows/phase-4.yml
+  phase_5:
+    needs: phase_4
+    uses: ./.github/workflows/phase-5.yml
