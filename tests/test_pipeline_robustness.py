@@ -77,7 +77,7 @@ def test_large_input_runs_under_hard_memory_limit(tmp_path):
     assert from_phase2.returncode != 0
 
 
-@pytest.mark.parametrize("seed", [1, 2, 3])
+@pytest.mark.parametrize("seed", range(1, 11))
 def test_kill9_crash_recovery_matches_uninterrupted_run(tmp_path, seed):
     rng = random.Random(seed)
     rows, batch = 20_000, 200
@@ -109,12 +109,54 @@ def test_kill9_crash_recovery_matches_uninterrupted_run(tmp_path, seed):
     assert dead == ref_dead
 
 
-def test_throughput_regression_against_phase2_baseline(tmp_path):
+@pytest.mark.parametrize(
+    "point,nth",
+    [
+        ("checkpoint-write", 1),
+        ("checkpoint-write", 17),
+        ("checkpoint-rename", 1),
+        ("checkpoint-rename", 40),
+        ("part-rename", 1),
+        ("part-rename", 33),
+        ("final-rename", 1),
+    ],
+)
+def test_kill9_at_checkpoint_write_and_rename_points(tmp_path, point, nth):
+    rows, batch = 10_000, 200
+    src = write_input(tmp_path / "in.csv", rows)
+    ref_out = tmp_path / "ref.csv"
+    Pipeline(src, ref_out, tmp_path / "ref_w", transform=make_transform(0, batch), batch_size=batch).run()
+    ref = fingerprint(ref_out)
+    out, work = tmp_path / "out.csv", tmp_path / "w"
+    base = [str(src), str(out), str(work), "--batch-size", str(batch)]
+    killed = worker(*base, "--kill-at", f"{point}:{nth}")
+    assert killed.returncode == -signal.SIGKILL, killed.stderr[-2000:]
+    final = worker(*base, "--resume")
+    assert final.returncode == 0, final.stderr[-2000:]
+    assert fingerprint(out) == ref
+    ids = read_ids(out)
+    assert len(ids) == len(set(ids)) == ref[0]
+    assert not list(work.rglob("*.tmp")) and not out.with_name(out.name + ".tmp").exists()
+
+
+def test_throughput_regression_against_phase3_baseline(tmp_path):
+    """Fail on a >20% drop of Phase 3 throughput vs the recorded baseline.
+
+    Throughput is compared as the Phase 3 / Phase 2 ratio measured on the same machine in the same
+    test, so slower or faster CI hardware does not matter. The 20% threshold is ~3.6x the measured
+    Phase 3 run-to-run spread (5.5%) and ~20x the ratio's noise; see docs/developer-guide.md.
+    """
+    from benchmarks.run_benchmark import make_input, measure, summarize
+
     baseline = json.loads((ROOT / "tests" / "perf" / "phase2_baseline.json").read_text())
-    src = write_input(tmp_path / "in.csv", 100_000, pad=40)
-    p = Pipeline(src, tmp_path / "o.csv", tmp_path / "w", transform=make_transform(0, 1000), batch_size=1000)
-    m = p.run().metrics
-    # Phase 3 trades speed for bounded memory; fail only on a gross regression
-    # (CI runners are noisy): at least 25% of recorded Phase 2 throughput.
-    assert m.throughput >= 0.25 * baseline["phase2"]["records_per_second"]
-    assert baseline["phase3"]["peak_rss_mb"] < baseline["phase2"]["peak_rss_mb"]
+    src = tmp_path / "in.csv"
+    make_input(src, baseline["rows"])
+    samples: dict[str, list[dict]] = {"phase2": [], "phase3": []}
+    for _ in range(3):
+        for mode in samples:
+            samples[mode].append(measure(mode, src, tmp_path))
+    p2, p3 = summarize(samples["phase2"]), summarize(samples["phase3"])
+    ratio = p3["records_per_second"] / p2["records_per_second"]
+    floor = (1 - baseline["regression_threshold_pct"] / 100) * baseline["phase3_vs_phase2_throughput_ratio"]
+    assert ratio >= floor, f"Phase 3/Phase 2 ratio {ratio:.3f} fell below {floor:.3f} (baseline {baseline['phase3_vs_phase2_throughput_ratio']})"
+    assert p3["peak_rss_mb"] < p2["peak_rss_mb"]

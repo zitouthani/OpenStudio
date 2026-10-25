@@ -269,3 +269,80 @@ def test_batch_ids_are_stable_and_contiguous(n, batch_size):
         expected_batches = -(-n // batch_size)
         assert r.checkpoint.last_committed_batch == expected_batches - 1
         assert r.checkpoint.batches == expected_batches
+
+
+def test_metrics_per_run_and_cumulative_after_resume(tmp_path):
+    from tests._pipeline_worker import make_transform
+
+    src = write_input(tmp_path / "in.csv", 1000)
+    holder = {}
+    base_t = make_transform(0, 100)
+
+    def cancelling(row):
+        if row["id"] == "350":
+            holder["p"].cancel()
+        return base_t(row)
+
+    p1 = Pipeline(src, tmp_path / "o.csv", tmp_path / "w", transform=cancelling, batch_size=100)
+    holder["p"] = p1
+    r1 = p1.run()
+    assert r1.status == "cancelled"
+    done = r1.checkpoint
+    assert done.records_in == r1.metrics.run_records_in == r1.metrics.records_in
+
+    r2 = Pipeline(src, tmp_path / "o.csv", tmp_path / "w", transform=base_t, batch_size=100).run(resume=True)
+    m = r2.metrics
+    ref = Pipeline(src, tmp_path / "ref.csv", tmp_path / "ref_w", transform=base_t, batch_size=100).run().metrics
+    # ground truth: 1000 rows, ids divisible by 97 are rejected
+    assert ref.records_in == 1000 and ref.records_rejected == 1000 // 97
+    # cumulative view equals an uninterrupted run
+    for name in ("records_in", "records_out", "records_rejected", "records_filtered"):
+        assert getattr(m, name) == getattr(ref, name)
+    assert m.batches_processed == 10
+    # per-run view is exactly what this resume did
+    assert m.run_records_in == 1000 - done.records_in
+    assert m.run_records_out == ref.records_out - done.records_out
+    assert m.run_records_rejected == ref.records_rejected - done.records_rejected
+    assert m.run_batches_processed == 10 - done.batches
+    prom = (tmp_path / "w" / "metrics.prom").read_text()
+    assert f"openstudio_records_in_total {m.records_in}" in prom
+    assert f"openstudio_run_records_in_total {m.run_records_in}" in prom
+
+
+def _enospc(path_suffix):
+    import errno
+    import os
+
+    real = os.fsync
+
+    def fsync(fd):
+        if os.readlink(f"/proc/self/fd/{fd}").endswith(path_suffix):
+            raise OSError(errno.ENOSPC, "No space left on device")
+        return real(fd)
+
+    return fsync
+
+
+@pytest.mark.parametrize("suffix", ["out.csv.tmp", "part-00000003.csv.tmp"])
+def test_enospc_leaves_no_partial_output_and_resumes_cleanly(tmp_path, monkeypatch, suffix):
+    import os
+
+    from tests._pipeline_worker import make_transform
+
+    src = write_input(tmp_path / "in.csv", 2000)
+    t = make_transform(0, 100)
+    ref = run_reference(tmp_path, src, 100, t)
+    out = tmp_path / "out.csv"
+    with monkeypatch.context() as mp:
+        mp.setattr(os, "fsync", _enospc(suffix))
+        p = Pipeline(src, out, tmp_path / "w", transform=t, batch_size=100, max_retries=1, backoff_base=0, sleep=lambda s: None)
+        # part write: retries exhausted -> PipelineError; output assembly: raw OSError(ENOSPC)
+        with pytest.raises((PipelineError, OSError)):
+            p.run()
+    assert not out.exists()
+    assert not list((tmp_path / "w").rglob("*.tmp")) and not out.with_name("out.csv.tmp").exists()
+    r2 = Pipeline(src, out, tmp_path / "w", transform=t, batch_size=100).run(resume=True)
+    assert r2.status == "completed"
+    assert fingerprint(out) == fingerprint(ref)
+    ids = read_ids(out)
+    assert len(ids) == len(set(ids))

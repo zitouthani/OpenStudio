@@ -2,12 +2,17 @@
 
 Each measurement runs in a fresh subprocess so ru_maxrss is per-run.
 
-    python benchmarks/run_benchmark.py --rows 500000 --write-baseline
+    python benchmarks/run_benchmark.py --rows 500000 --runs 7 --write-baseline
+
+Phase 2 is a full ``execute_graph`` run (CSVReader -> TransformComponent -> CSVWriter) and Phase 3 a
+full ``Pipeline`` run on the same file. Each is repeated ``--runs`` times (runs alternate between the
+two modes to share machine noise); median, min, max and relative spread are recorded.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import statistics
 import subprocess
 import sys
 import tempfile
@@ -62,20 +67,41 @@ def measure(mode: str, src: Path, tmp: Path, batch_size: int = 1000) -> dict:
     return json.loads(out.stdout.strip().splitlines()[-1])
 
 
+def summarize(samples: list[dict]) -> dict:
+    rps = [x["records_per_second"] for x in samples]
+    med = statistics.median(rps)
+    return {
+        "records": samples[0]["records"],
+        "runs": len(samples),
+        "records_per_second_runs": [round(v, 1) for v in rps],
+        "records_per_second": med,
+        "records_per_second_min": min(rps),
+        "records_per_second_max": max(rps),
+        "spread_pct": round((max(rps) - min(rps)) / med * 100, 1),
+        "seconds": statistics.median(x["seconds"] for x in samples),
+        "peak_rss_mb": statistics.median(x["peak_rss_mb"] for x in samples),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--rows", type=int, default=500_000)
+    parser.add_argument("--runs", type=int, default=5)
     parser.add_argument("--write-baseline", action="store_true")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as d:
         tmp = Path(d)
         src = tmp / "in.csv"
         make_input(src, args.rows)
+        samples: dict[str, list[dict]] = {"phase2": [], "phase3": []}
+        for _ in range(args.runs):
+            for mode in samples:
+                samples[mode].append(measure(mode, src, tmp))
         result = {
             "rows": args.rows,
             "input_mb": round(src.stat().st_size / 2**20, 1),
-            "phase2": measure("phase2", src, tmp),
-            "phase3": measure("phase3", src, tmp),
+            "phase2": summarize(samples["phase2"]),
+            "phase3": summarize(samples["phase3"]),
         }
     print(json.dumps(result, indent=2))
     if args.write_baseline:
