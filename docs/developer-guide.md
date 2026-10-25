@@ -21,6 +21,20 @@ pytest
 ruff check src tests
 ```
 
+## Desktop editor
+
+Install the optional GUI dependency and launch the editor:
+
+```bash
+python -m pip install -e ".[gui]"
+openstudio-etl-gui
+```
+
+The editor is intentionally kept in `src/desktop`; job validation and
+translation to runtime components live in `src/desktop/pipeline.py` so the
+execution engine remains independent of PySide6. See
+[`desktop-editor.md`](desktop-editor.md) for supported components and usage.
+
 ## Phase workflow
 
 - Phase instructions live under `.github/phases/`.

@@ -84,6 +84,28 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements/dev.txt
 ```
 
+### Install and run the desktop editor
+
+The graphical editor is optional so the core engine and CLI do not require a
+GUI toolkit:
+
+```bash
+python -m pip install -e ".[gui]"
+openstudio-etl-gui
+```
+
+On Windows, if the console script is not on `PATH`, run:
+
+```powershell
+python -m src.desktop.app
+```
+
+The first editor supports a linear CSV pipeline: CSV Reader, optional Filter
+and Transform steps, then CSV Writer. Save jobs as JSON, validate the
+configuration, and run it locally through the existing execution engine.
+The editor is an early phase-2 implementation, not yet a production
+workflow designer.
+
 ### Running tests
 
 ```bash
@@ -155,6 +177,7 @@ audits, vulnerability analysis, or source review.
 - `README.md` is the entry point for installation and usage.
 - `docs/architecture.md` describes module boundaries.
 - `docs/developer-guide.md` explains tooling and local workflow.
+- `docs/desktop-editor.md` explains the phase-2 editor and supported pipeline.
 - `docs/release.md` covers packaging and release validation.
 
 ## Contributing

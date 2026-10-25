@@ -1,3 +1,3 @@
-from .app import OpenStudioApp
+from .app import OpenStudioApp, main
 
-__all__ = ["OpenStudioApp"]
+__all__ = ["OpenStudioApp", "main"]
