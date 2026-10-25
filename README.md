@@ -120,6 +120,24 @@ This project may process sensitive customer data, credentials, file paths, and e
 
 See `SECURITY.md` and `docs/security.md` for policy details.
 
+## Supply-chain security and releases
+
+GitHub Actions runs the test suite, audits Python dependencies, compiles the
+source, and builds the distributions. Version tags (`v*`) trigger a release
+workflow that attaches the wheel and source archive to a GitHub Release and
+publishes to PyPI using Trusted Publishing. Configure the repository's `pypi`
+environment and PyPI trusted publisher before creating the first release tag.
+
+The build provenance workflow attests release build artifacts. Users can verify
+a downloaded wheel with GitHub CLI:
+
+```bash
+gh attestation verify openstudio_etl-0.1.0-py3-none-any.whl --repo zitouthani/OpenStudio
+```
+
+Provenance is one supply-chain control; it does not replace tests, dependency
+audits, vulnerability analysis, or source review.
+
 ## Documentation
 
 - `README.md` is the entry point for installation and usage.
