@@ -39,6 +39,7 @@ This repository provides a maintainable foundation for visual pipeline authoring
 │   ├── architecture.md
 │   ├── developer-guide.md
 │   ├── security.md
+│   ├── ETL-importer.md
 │   └── release.md
 ├── requirements/
 │   ├── base.txt
@@ -52,6 +53,7 @@ This repository provides a maintainable foundation for visual pipeline authoring
 │   ├── components/
 │   ├── desktop/
 │   ├── cli/
+│   ├── ETL_importer/
 │   └── common/
 ├── web/
 │   ├── index.html
@@ -137,7 +139,7 @@ The project is organized in six phases:
 3. Phase 2 — Desktop editor
 4. Phase 3 — Robust execution
 5. Phase 4 — Connectors
-6. Phase 5 — Interoperability and release
+6. Phase 5 — ETL migration and release
 
 Each phase contains an `instruction.md` file and matching GitHub workflow automation.
 
@@ -178,6 +180,7 @@ audits, vulnerability analysis, or source review.
 - `docs/architecture.md` describes module boundaries.
 - `docs/developer-guide.md` explains tooling and local workflow.
 - `docs/desktop-editor.md` explains the phase-2 editor and supported pipeline.
+- `docs/ETL-importer.md` describes migration safety and reporting.
 - `docs/release.md` covers packaging and release validation.
 
 ## Contributing
